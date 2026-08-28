@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:v2.1.2
+    container_name: evolution_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # Server Configuration
+      - SERVER_PORT=8080
+      - SERVER_URL=http://localhost:8080
+
+      # Global API Key Authentication (Protecting your Evolution API)
+      - AUTHENTICATION_API_KEY=dermat_clinic_secret_key_2026
+
+      # Database Configuration (Using MongoDB from your Atlas Cluster or Memory)
+      - DATABASE_PROVIDER=mongodb
+      - DATABASE_CONNECTION_URI=mongodb://xtrixeditzz_db_user:LsSg6aRF8j7N1hyy@ac-n7liqds-shard-00-00.ejgy2yb.mongodb.net:27017,ac-n7liqds-shard-00-01.ejgy2yb.mongodb.net:27017,ac-n7liqds-shard-00-02.ejgy2yb.mongodb.net:27017/evolution_api?ssl=true&replicaSet=atlas-v7zvnr-shard-0&authSource=admin&appName=Cluster0
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - DATABASE_SAVE_DATA_MESSAGES=true
+
+      # Baileys / WhatsApp Engine Config
+      - QRCODE_LIMIT=30
+      - WEBSOCKET_ENABLED=true
+      - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE
+      - LOG_COLOR=true
+
+    volumes:
+      - evolution_instances:/evolution/instances
+
+volumes:
+  evolution_instances:
+    name: evolution_instances
