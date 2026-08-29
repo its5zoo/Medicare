@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '@/api/client'
+import { apiClient } from '@/lib/apiClient'
 
 export const TRANSACTION_TIMEOUT_MS = 40_000
 
@@ -34,9 +35,9 @@ export async function apiPost<TData>(
   body: unknown
 ): Promise<ApiResult<TData>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const normalizedBase = API_BASE_URL.replace(/\/+$/, '')
+    const response = await apiClient(`${normalizedBase}${endpoint}`, {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
@@ -50,9 +51,16 @@ export async function apiPost<TData>(
     } | null
 
     if (!json) {
+      if (!response.ok) {
+        return {
+          success: false,
+          error: { code: 'SERVER_ERROR', message: `Server error (${response.status})` },
+          status: response.status,
+        }
+      }
       return {
         success: false,
-        error: { code: 'INVALID_RESPONSE', message: 'Workflow returned invalid JSON' },
+        error: { code: 'INVALID_RESPONSE', message: 'Workflow returned invalid response format' },
         status: response.status,
       }
     }
@@ -77,7 +85,7 @@ export async function apiPost<TData>(
   } catch {
     return {
       success: false,
-      error: { code: 'NETWORK_ERROR', message: 'Unable to reach workflow' },
+      error: { code: 'NETWORK_ERROR', message: 'Unable to reach backend server' },
       status: 0,
     }
   }
@@ -85,8 +93,9 @@ export async function apiPost<TData>(
 
 export async function apiGet<TData>(endpoint: string): Promise<ApiResult<TData>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      credentials: 'include',
+    const normalizedBase = API_BASE_URL.replace(/\/+$/, '')
+    const response = await apiClient(`${normalizedBase}${endpoint}`, {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     })
 
@@ -111,7 +120,7 @@ export async function apiGet<TData>(endpoint: string): Promise<ApiResult<TData>>
   } catch {
     return {
       success: false,
-      error: { code: 'NETWORK_ERROR', message: 'Unable to reach workflow' },
+      error: { code: 'NETWORK_ERROR', message: 'Unable to reach backend server' },
       status: 0,
     }
   }

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { User } from '../models/User.js'
+import { User } from '../models/User'
 
 const router = Router()
 const JWT_SECRET = process.env.JWT_SECRET || 'dermat-crm-jwt-secret-2026'
@@ -102,6 +102,7 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
     return res.json({
       success: true,
       data: {
+        token,
         user: {
           id: user._id.toString(),
           username: user.username,
