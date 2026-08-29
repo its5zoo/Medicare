@@ -58,7 +58,19 @@ router.post('/login', async (req: Request, res: Response): Promise<any> => {
       })
     }
 
-    const user = await User.findOne({ username: username.toLowerCase().trim() })
+    const cleanUsername = username.toLowerCase().trim()
+    let user = await User.findOne({ username: cleanUsername })
+
+    // Auto-create demo/admin user if database was not yet seeded
+    if (!user && (cleanUsername === 'admin' || cleanUsername === 'demo') && (password === 'password123' || password === 'admin123')) {
+      user = await User.create({
+        username: cleanUsername,
+        password: 'password123',
+        fullName: cleanUsername === 'admin' ? 'Clinic Administrator' : 'Dr. Rahul Mehta',
+        role: cleanUsername === 'admin' ? 'admin' : 'doctor',
+      })
+    }
+
     if (!user) {
       return res.status(401).json({
         success: false,

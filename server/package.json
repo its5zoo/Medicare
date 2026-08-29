@@ -1,0 +1,10 @@
+{
+  "name": "dermat-crm-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "seed": "tsx seed.ts"
+  }
+}

@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"tsx watch server/index.ts\" \"vite\"",
+    "dev:frontend": "vite",
+    "dev:backend": "tsx watch server/index.ts",
     "server": "tsx server/index.ts",
     "seed": "tsx server/seed.ts",
     "dev:all": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"blue,magenta\" \"tsx watch server/index.ts\" \"vite\"",
