@@ -19,6 +19,7 @@ import { AllReviewsPage } from '@/pages/AllReviewsPage'
 import { SubmittedReviewsPage } from '@/pages/SubmittedReviewsPage'
 import { DataHealthPage } from '@/pages/DataHealthPage'
 import { MedicineTrackerPage } from '@/pages/MedicineTrackerPage'
+import { BedsPage } from '@/pages/BedsPage'
 
 export default function App() {
   return (
@@ -55,10 +56,12 @@ export default function App() {
                 <Route path="prescriptions/completed" element={<PrescriptionsPage completed />} />
                 <Route path="medicine/tracker" element={<MedicineTrackerPage />} />
                 <Route path="medicine/inventory" element={<MedicineTrackerPage />} />
-                <Route path="follow-ups/today" element={<FollowUpsPage filter="today" />} />
-                <Route path="follow-ups/upcoming" element={<FollowUpsPage filter="upcoming" />} />
-                <Route path="follow-ups/missed" element={<FollowUpsPage filter="missed" />} />
-                <Route path="follow-ups/completed" element={<FollowUpsPage filter="completed" />} />
+                <Route path="beds" element={<BedsPage filterStatus="all" />} />
+                <Route path="beds/all" element={<BedsPage filterStatus="all" />} />
+                <Route path="beds/occupied" element={<BedsPage filterStatus="occupied" />} />
+                <Route path="beds/available" element={<BedsPage filterStatus="available" />} />
+                <Route path="beds/maintenance" element={<BedsPage filterStatus="maintenance" />} />
+                <Route path="follow-ups/*" element={<Navigate to="/beds" replace />} />
                 <Route path="analytics" element={<AnalyticsPage />} />
                 <Route path="feedback/reviews" element={<AllReviewsPage />} />
                 <Route path="feedback/submitted" element={<SubmittedReviewsPage />} />

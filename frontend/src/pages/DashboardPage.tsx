@@ -10,7 +10,7 @@ import {
 import { DashboardError } from '@/components/dashboard/DashboardError'
 import { RecentRegistrations } from '@/components/dashboard/RecentRegistrations'
 import { StatsCards } from '@/components/dashboard/StatsCards'
-import { TodayFollowups } from '@/components/dashboard/TodayFollowups'
+import { LiveBedOccupancy } from '@/components/dashboard/LiveBedOccupancy'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -185,11 +185,7 @@ export function DashboardPage() {
                 <div className="lg:col-span-2 space-y-6">
                   <RecentRegistrations registrations={data.recentRegistrations} />
                   <ConsultationPending patients={data.consultationPending} />
-                  <TodayFollowups 
-                    followups={data.todayFollowups} 
-                    onComplete={setCompleteTarget}
-                    onReschedule={setRescheduleTarget}
-                  />
+                  <LiveBedOccupancy />
                 </div>
 
                 <Card className="h-fit">

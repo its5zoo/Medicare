@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   BarChart3,
-  CalendarClock,
+  BedDouble,
   ChevronDown,
   ChevronLeft,
   ClipboardList,
@@ -54,13 +54,13 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Follow-Up',
-    icon: CalendarClock,
+    label: 'Hospital Beds',
+    icon: BedDouble,
     children: [
-      { label: "Today's Follow-Ups", path: '/follow-ups/today' },
-      { label: 'Upcoming', path: '/follow-ups/upcoming' },
-      { label: 'Missed', path: '/follow-ups/missed' },
-      { label: 'Completed', path: '/follow-ups/completed' },
+      { label: 'All Beds & Wards', path: '/beds' },
+      { label: 'Occupied Beds', path: '/beds/occupied' },
+      { label: 'Available Beds', path: '/beds/available' },
+      { label: 'Cleaning & Servicing', path: '/beds/maintenance' },
     ],
   },
   {
@@ -89,8 +89,8 @@ export function Sidebar({ collapsed, mobileOpen, onToggle, onMobileClose }: Side
     Registration: true,
     Patients: true,
     Medicine: true,
-    'Follow-Up': true,
-    Feedback: true,
+    'Hospital Beds': true,
+    Feedback: false,
   })
 
   const toggleExpand = (label: string) => {

@@ -1,6 +1,6 @@
 import {
-  AlertCircle,
-  CalendarCheck,
+  BedDouble,
+  CheckCircle2,
   ClipboardList,
   Pill,
   Stethoscope,
@@ -11,6 +11,7 @@ import { KpiCard } from '@/components/dashboard/KpiCard'
 import { kpiSparklines } from '@/data/mockData'
 import type { DashboardCards } from '@/api/types'
 import { humanizeNumber } from '@/lib/humanizer'
+import { initialBeds } from '@/data/bedManagementData'
 
 interface StatsCardsProps {
   cards: DashboardCards
@@ -18,6 +19,9 @@ interface StatsCardsProps {
 
 export function StatsCards({ cards }: StatsCardsProps) {
   const navigate = useNavigate()
+
+  const occupiedBeds = initialBeds.filter((b) => b.status === 'Occupied').length
+  const availableBeds = initialBeds.filter((b) => b.status === 'Available').length
 
   const kpis = [
     {
@@ -48,22 +52,22 @@ export function StatsCards({ cards }: StatsCardsProps) {
       onClick: () => navigate('/patients/active'),
     },
     {
-      label: "Today's Follow-Ups",
-      value: humanizeNumber(cards.todayFollowups),
-      trend: 15,
+      label: 'Occupied Beds',
+      value: String(occupiedBeds),
+      trend: 14,
       sparkline: kpiSparklines.todaysFollowUps,
-      icon: <CalendarCheck className="h-5 w-5 text-blue-600" />,
-      iconBg: 'bg-blue-50 dark:bg-blue-950',
-      onClick: () => navigate('/follow-ups/today'),
+      icon: <BedDouble className="h-5 w-5 text-indigo-600" />,
+      iconBg: 'bg-indigo-50 dark:bg-indigo-950',
+      onClick: () => navigate('/beds/occupied'),
     },
     {
-      label: 'Missed Follow-Ups',
-      value: humanizeNumber(cards.missedFollowups),
-      trend: -3,
+      label: 'Available Beds',
+      value: String(availableBeds),
+      trend: 5,
       sparkline: kpiSparklines.missedFollowUps,
-      icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-      iconBg: 'bg-red-50 dark:bg-red-950',
-      onClick: () => navigate('/follow-ups/missed'),
+      icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950',
+      onClick: () => navigate('/beds/available'),
     },
     {
       label: 'Active Prescriptions',
@@ -72,7 +76,7 @@ export function StatsCards({ cards }: StatsCardsProps) {
       sparkline: kpiSparklines.activePrescriptions,
       icon: <Pill className="h-5 w-5 text-sky-600" />,
       iconBg: 'bg-sky-50 dark:bg-sky-950',
-      onClick: () => navigate('/prescriptions/active'),
+      onClick: () => navigate('/prescriptions'),
     },
   ]
 
