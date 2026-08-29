@@ -84,10 +84,15 @@ router.get('/', async (_req: Request, res: Response): Promise<any> => {
         followupId: f.followupId,
         patientId: f.patientId,
         patientName: f.patientName,
+        phone: f.phone,
         doctor: f.doctor,
         date: f.followupDate,
         time: f.followupTime,
+        followupDate: f.followupDate,
+        followupTime: f.followupTime,
         status: f.status,
+        rescheduleCount: f.rescheduleCount || 0,
+        searchText: `${f.followupId} ${f.patientName} ${f.phone || ''} ${f.doctor}`.toLowerCase(),
       }))
 
     // Active Prescriptions (Preview Items)
@@ -192,10 +197,13 @@ router.get('/', async (_req: Request, res: Response): Promise<any> => {
         patientName: f.patientName,
         phone: f.phone,
         doctor: f.doctor,
+        date: f.followupDate,
+        time: f.followupTime,
         followupDate: f.followupDate,
         followupTime: f.followupTime,
+        rescheduleCount: f.rescheduleCount || 0,
         status: f.status,
-        searchText: `${f.followupId} ${f.patientName} ${f.phone} ${f.doctor}`.toLowerCase(),
+        searchText: `${f.followupId} ${f.patientName} ${f.phone || ''} ${f.doctor}`.toLowerCase(),
       }))
 
     const missedFollowups = followUps
@@ -206,11 +214,14 @@ router.get('/', async (_req: Request, res: Response): Promise<any> => {
         patientName: f.patientName,
         phone: f.phone,
         doctor: f.doctor,
+        date: f.followupDate,
+        time: f.followupTime,
         followupDate: f.followupDate,
         followupTime: f.followupTime,
         daysOverdue: 3,
         rescheduleCount: f.rescheduleCount || 0,
         status: f.status,
+        searchText: `${f.followupId} ${f.patientName} ${f.phone || ''} ${f.doctor}`.toLowerCase(),
       }))
 
     const completedFollowups = followUps
@@ -221,11 +232,14 @@ router.get('/', async (_req: Request, res: Response): Promise<any> => {
         patientName: f.patientName,
         phone: f.phone,
         doctor: f.doctor,
+        date: f.followupDate,
+        time: f.followupTime,
         followupDate: f.followupDate,
         followupTime: f.followupTime,
         daysOverdue: 0,
         rescheduleCount: f.rescheduleCount || 0,
         status: f.status,
+        searchText: `${f.followupId} ${f.patientName} ${f.phone || ''} ${f.doctor}`.toLowerCase(),
       }))
 
     // Reviews list & summary
