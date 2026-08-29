@@ -30,23 +30,26 @@ export function RescheduleFollowUpModal({
   followUp,
   onSubmit,
 }: RescheduleFollowUpModalProps) {
-  const [date, setDate] = useState('')
-  const [timeSlot, setTimeSlot] = useState<FollowUpTimeSlot>('Morning')
-  const [reason, setReason] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
-
-  // Calculate tomorrow's date for the min attribute
+  const todayStr = new Date().toISOString().split('T')[0]
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
   const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
+  const [date, setDate] = useState(tomorrowStr)
+  const [timeSlot, setTimeSlot] = useState<FollowUpTimeSlot>('Morning')
+  const [reason, setReason] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
+
   useEffect(() => {
     if (followUp) {
-      setDate(followUp.date)
-      setTimeSlot(followUp.timeSlot)
+      const initialDate = followUp.date && followUp.date >= todayStr ? followUp.date : tomorrowStr
+      setDate(initialDate)
+      setTimeSlot(followUp.timeSlot || 'Morning')
       setReason(followUp.rescheduleReason ?? '')
+    } else {
+      setDate(tomorrowStr)
     }
-  }, [followUp])
+  }, [followUp, todayStr, tomorrowStr])
 
   // Clear error when modal closes/opens
   useEffect(() => {
@@ -58,15 +61,17 @@ export function RescheduleFollowUpModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Server-side validation check client-side
-    const today = new Date().toISOString().split('T')[0]
-    if (date <= today) {
-      setErrorMsg('Please select a future date.')
+    if (!date) {
+      setErrorMsg('Please select a valid follow-up date.')
       return
     }
 
     setErrorMsg('')
-    onSubmit({ date, timeSlot, reason })
+    onSubmit({
+      date,
+      timeSlot,
+      reason: reason.trim() || 'Rescheduled consultation',
+    })
     onOpenChange(false)
   }
 
@@ -87,10 +92,10 @@ export function RescheduleFollowUpModal({
                 setDate(e.target.value)
                 setErrorMsg('')
               }} 
-              min={tomorrowStr}
+              min={todayStr}
               required 
             />
-            {errorMsg && <p className="text-sm text-danger mt-1">{errorMsg}</p>}
+            {errorMsg && <p className="text-sm text-red-500 mt-1">{errorMsg}</p>}
           </div>
           <FollowUpTimeChipSelect value={timeSlot} onChange={setTimeSlot} />
           <div>

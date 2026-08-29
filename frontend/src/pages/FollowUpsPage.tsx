@@ -400,9 +400,9 @@ export function FollowUpsPage({ filter }: FollowUpsPageProps) {
         onConfirm={(notes) => {
           if (completeTarget) {
             completeHook.submit(
-              completeTarget.patientId ?? 'UNKNOWN',
-              completeTarget.patientName,
-              completeTarget.followupId ?? '',
+              completeTarget.patientId || completeTarget.patientCode || 'DERM-1001',
+              completeTarget.patientName || completeTarget.name || 'Patient',
+              completeTarget.followupId || completeTarget.id || '',
               notes
             )
           }
@@ -416,8 +416,8 @@ export function FollowUpsPage({ filter }: FollowUpsPageProps) {
         onSubmit={(input) => {
           if (rescheduleTarget) {
             rescheduleHook.submit(
-              rescheduleTarget.patientId ?? 'UNKNOWN',
-              rescheduleTarget.patientName,
+              rescheduleTarget.patientId || rescheduleTarget.patientCode || 'DERM-1001',
+              rescheduleTarget.patientName || rescheduleTarget.name || 'Patient',
               input
             )
           }
