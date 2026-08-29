@@ -16,7 +16,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'CHECK_SESSION_START': return { ...state, status: 'loading', error: null }
     case 'SESSION_RESTORED': return { ...state, status: 'authenticated', user: action.payload, error: null }
     case 'SESSION_REJECTED': return { ...state, status: 'unauthenticated', user: null, error: null }
-    case 'SESSION_ERROR': return { ...state, status: 'error', error: action.payload }
+    case 'SESSION_ERROR': return { ...state, status: 'unauthenticated', user: null, error: null }
     case 'LOGOUT': return { ...state, status: 'unauthenticated', user: null, error: null }
     default: return state
   }
@@ -46,16 +46,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (signal?.aborted) return
 
-      if (response.success && response.data) {
+      if (response.success && response.data?.user) {
         dispatch({ type: 'SESSION_RESTORED', payload: response.data.user })
-      } else if (response.error?.code === 'UNAUTHORIZED') {
-        dispatch({ type: 'SESSION_REJECTED' })
       } else {
-        dispatch({ type: 'SESSION_ERROR', payload: response.error?.message || 'Unknown error' })
+        // Direct to login immediately
+        dispatch({ type: 'SESSION_REJECTED' })
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError' || signal?.aborted) return
-      dispatch({ type: 'SESSION_ERROR', payload: err?.message || 'Unknown error' })
+    } catch {
+      if (signal?.aborted) return
+      // On any failure, directly show login page
+      dispatch({ type: 'SESSION_REJECTED' })
     }
   }, [])
 
@@ -69,36 +69,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'LOGOUT' })
   }, [])
 
-  // Global Unauthorized Listener
-  // useEffect(() => {
-  //   const handleUnauthorized = () => {
-  //     if (isHandlingUnauthorized.current) return
-  //     isHandlingUnauthorized.current = true
-
-  //     clearSession()
-  //     queryClient.clear()
-  //     navigate('/login', { replace: true })
-
-  //     setSessionExpiredToast(true)
-
-  //     setTimeout(() => {
-  //       setSessionExpiredToast(false)
-  //       isHandlingUnauthorized.current = false
-  //     }, 5000)
-  //   }
-
-  // }, [clearSession, navigate, queryClient])
   useEffect(() => {
     const handleUnauthorized = () => {
       if (isHandlingUnauthorized.current) return
-
       isHandlingUnauthorized.current = true
 
       clearSession()
       queryClient.clear()
 
       navigate('/login', { replace: true })
-
       setSessionExpiredToast(true)
 
       setTimeout(() => {
@@ -107,31 +86,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, 5000)
     }
 
-    window.addEventListener(
-      'auth:unauthorized',
-      handleUnauthorized
-    )
-
-    return () => {
-      window.removeEventListener(
-        'auth:unauthorized',
-        handleUnauthorized
-      )
-    }
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
   }, [clearSession, navigate, queryClient])
 
   if (state.status === 'idle' || state.status === 'loading') {
     return <StartupLoader />
-  }
-
-  if (state.status === 'error') {
-    return (
-      <StartupLoader
-        error={state.error}
-        onRetry={() => initializeAuth()}
-        onGoToLogin={() => dispatch({ type: 'SESSION_REJECTED' })}
-      />
-    )
   }
 
   return (

@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express'
-import { Patient } from '../models/Patient.js'
-import { Consultation } from '../models/Consultation.js'
-import { Prescription } from '../models/Prescription.js'
-import { FollowUp } from '../models/FollowUp.js'
-import { Activity } from '../models/Activity.js'
-import { automationService } from '../services/automationService.js'
+import { Patient } from '../models/Patient'
+import { Consultation } from '../models/Consultation'
+import { Prescription } from '../models/Prescription'
+import { FollowUp } from '../models/FollowUp'
+import { Activity } from '../models/Activity'
+import { automationService } from '../services/automationService'
 
 const router = Router()
 
@@ -304,13 +304,17 @@ router.post(['/register', '/patients/register'], async (req: Request, res: Respo
       priority: 'normal',
     })
 
-    // Trigger Automated Welcome Message Workflow
-    await automationService.sendWelcomeRegistration({
-      patientId: newPatient.patientId,
-      name: newPatient.name,
-      phone: newPatient.phone,
-      doctor: newPatient.doctor,
-    })
+    // Trigger Automated Welcome Message Workflow (Non-blocking)
+    try {
+      await automationService.sendWelcomeRegistration({
+        patientId: newPatient.patientId,
+        name: newPatient.name,
+        phone: newPatient.phone,
+        doctor: newPatient.doctor,
+      })
+    } catch (autoErr) {
+      console.warn('[Registration: Welcome WhatsApp Skipped]', autoErr)
+    }
 
     return res.json({
       success: true,

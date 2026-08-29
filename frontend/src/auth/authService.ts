@@ -77,67 +77,6 @@ function isDemoCredential(username?: string, password?: string): boolean {
 export const authService = {
   async getMe(signal?: AbortSignal): Promise<AuthResponse<{ user: User }>> {
     try {
-      const normalizedBase = API_BASE_URL.replace(/\/+$/, '')
-      const response = await apiClient(`${normalizedBase}/auth/me`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        signal,
-      })
-
-      if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem(DEMO_STORAGE_KEY)
-        return { success: false, error: { message: 'Unauthorized', code: 'UNAUTHORIZED' } }
-      }
-
-      if (!response.ok) {
-        const saved = localStorage.getItem(DEMO_STORAGE_KEY)
-        if (saved) {
-          try {
-            return { success: true, data: { user: JSON.parse(saved) } }
-          } catch {
-            localStorage.removeItem(DEMO_STORAGE_KEY)
-          }
-        }
-        return {
-          success: false,
-          error: {
-            message: getHumanizedMessage(response.status),
-            code: 'SERVER_ERROR',
-          },
-        }
-      }
-
-      const json = await parseJsonSafely(response)
-
-      if (!json) {
-        const saved = localStorage.getItem(DEMO_STORAGE_KEY)
-        if (saved) {
-          try {
-            return { success: true, data: { user: JSON.parse(saved) } }
-          } catch {
-            localStorage.removeItem(DEMO_STORAGE_KEY)
-          }
-        }
-        return { success: false, error: { message: 'Unauthorized', code: 'UNAUTHORIZED' } }
-      }
-
-      if (!json.success) {
-        return {
-          success: false,
-          error: {
-            message: json.error?.message || 'Authentication failed',
-            code: json.error?.code || 'UNAUTHORIZED',
-          },
-        }
-      }
-
-      return { success: true, data: json.data }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        throw err
-      }
-
       const saved = localStorage.getItem(DEMO_STORAGE_KEY)
       if (saved) {
         try {
@@ -147,11 +86,35 @@ export const authService = {
         }
       }
 
+      const normalizedBase = API_BASE_URL.replace(/\/+$/, '')
+      const response = await apiClient(`${normalizedBase}/auth/me`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        signal,
+      })
+
+      if (!response.ok) {
+        return { success: false, error: { message: 'Unauthorized', code: 'UNAUTHORIZED' } }
+      }
+
+      const json = await parseJsonSafely(response)
+      if (!json || !json.success || !json.data?.user) {
+        return { success: false, error: { message: 'Unauthorized', code: 'UNAUTHORIZED' } }
+      }
+
+      return { success: true, data: json.data }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw err
+      }
+
+      // Any network/cold start failure on initial load simply goes to login
       return {
         success: false,
         error: {
-          message: getHumanizedMessage(undefined, err.message),
-          code: 'NETWORK_ERROR',
+          message: 'Unauthorized',
+          code: 'UNAUTHORIZED',
         },
       }
     }
@@ -222,6 +185,10 @@ export const authService = {
         }
       }
 
+      if (json.data?.token) {
+        localStorage.setItem('auth_token', json.data.token)
+      }
+
       if (isDemo) {
         localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(json.data.user))
       }
@@ -246,6 +213,7 @@ export const authService = {
 
   async logout(): Promise<AuthResponse<null>> {
     localStorage.removeItem(DEMO_STORAGE_KEY)
+    localStorage.removeItem('auth_token')
     try {
       const normalizedBase = API_BASE_URL.replace(/\/+$/, '')
       await apiClient(`${normalizedBase}/auth/logout`, {
@@ -259,4 +227,3 @@ export const authService = {
     return { success: true, data: null }
   },
 }
-
