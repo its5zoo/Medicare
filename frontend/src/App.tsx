@@ -17,6 +17,8 @@ import { SettingsPage } from '@/pages/SettingsPage'
 import { FeedbackPage } from '@/pages/FeedbackPage'
 import { AllReviewsPage } from '@/pages/AllReviewsPage'
 import { SubmittedReviewsPage } from '@/pages/SubmittedReviewsPage'
+import { DataHealthPage } from '@/pages/DataHealthPage'
+import { MedicineTrackerPage } from '@/pages/MedicineTrackerPage'
 
 export default function App() {
   return (
@@ -48,8 +50,11 @@ export default function App() {
                 <Route path="patients" element={<AllPatientsPage />} />
                 <Route path="patients/active" element={<AllPatientsPage filterActive />} />
                 <Route path="patients/:id" element={<PatientProfilePage />} />
+                <Route path="prescriptions" element={<PrescriptionsPage />} />
                 <Route path="prescriptions/active" element={<PrescriptionsPage />} />
                 <Route path="prescriptions/completed" element={<PrescriptionsPage completed />} />
+                <Route path="medicine/tracker" element={<MedicineTrackerPage />} />
+                <Route path="medicine/inventory" element={<MedicineTrackerPage />} />
                 <Route path="follow-ups/today" element={<FollowUpsPage filter="today" />} />
                 <Route path="follow-ups/upcoming" element={<FollowUpsPage filter="upcoming" />} />
                 <Route path="follow-ups/missed" element={<FollowUpsPage filter="missed" />} />
@@ -57,6 +62,9 @@ export default function App() {
                 <Route path="analytics" element={<AnalyticsPage />} />
                 <Route path="feedback/reviews" element={<AllReviewsPage />} />
                 <Route path="feedback/submitted" element={<SubmittedReviewsPage />} />
+                <Route path="data-health" element={<DataHealthPage />} />
+                <Route path="data-quality" element={<DataHealthPage />} />
+                <Route path="health" element={<DataHealthPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Route>

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Pill,
   Settings,
+  ShieldCheck,
   Stethoscope,
   UserPlus,
   Users,
@@ -48,8 +49,8 @@ const navItems: NavItem[] = [
     label: 'Medicine',
     icon: Pill,
     children: [
-      { label: 'Active Prescriptions', path: '/prescriptions/active' },
-      { label: 'Completed Prescriptions', path: '/prescriptions/completed' },
+      { label: 'Prescriptions', path: '/prescriptions' },
+      { label: 'Medicine Tracker & Stock', path: '/medicine/tracker' },
     ],
   },
   {
@@ -71,6 +72,7 @@ const navItems: NavItem[] = [
     ],
   },
   { label: 'Analytics', icon: BarChart3, path: '/analytics' },
+  { label: 'Data Quality & Health', icon: ShieldCheck, path: '/data-health' },
   { label: 'Settings', icon: Settings, path: '/settings' },
 ]
 

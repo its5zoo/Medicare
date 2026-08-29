@@ -90,9 +90,6 @@ export function TopNavbar({ onMenuClick }: { onMenuClick?: () => void }) {
                 sideOffset={8}
                 className="z-50 w-48 rounded-2xl border border-border bg-card p-1 shadow-xl"
               >
-                <DropdownMenu.Item className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none hover:bg-muted/60">
-                  <User className="h-4 w-4" /> Profile
-                </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none hover:bg-muted/60"
                   onClick={() => navigate('/settings')}
