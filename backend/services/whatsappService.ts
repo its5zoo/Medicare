@@ -2,45 +2,40 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || 'http://localhost:8080'
-const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || 'dermat_clinic_secret_key_2026'
-const INSTANCE_NAME = process.env.EVOLUTION_INSTANCE_NAME || 'dermat_clinic'
+const EVOLUTION_API_URL =
+  process.env.EVOLUTION_API_URL || 'https://evolution-api-fj7p.onrender.com'
+const EVOLUTION_API_KEY =
+  process.env.EVOLUTION_API_KEY || 'dermat_clinic_secret_key_2026'
+const INSTANCE_NAME =
+  process.env.EVOLUTION_INSTANCE_NAME || 'dermat_clinic'
 
-function formatPhoneNumber(phone: string): string {
+export function formatPhoneNumber(phone: string): string {
+  if (!phone) return ''
   const cleaned = phone.replace(/\D/g, '')
-  if (cleaned.startsWith('91') && cleaned.length === 12) return cleaned
-  if (cleaned.length === 10) return `91${cleaned}`
+  if (cleaned.startsWith('91') && cleaned.length === 12) {
+    return cleaned
+  }
+  if (cleaned.length === 10) {
+    return `91${cleaned}`
+  }
   return cleaned
 }
 
 /**
- * Checks if a phone number is a simulated demo dummy number
+ * Checks if a phone number is an obvious dummy placeholder
  */
 export function isDemoOrDummyNumber(phone: string): boolean {
+  if (!phone) return true
   const cleaned = phone.replace(/\D/g, '')
 
-  // Safe dummy number patterns that should never be sent via real WhatsApp
+  // Only filter out obvious placeholders like all zeroes, all same digits, or less than 10 digits
   if (
-    cleaned.startsWith('910000') ||
-    cleaned.startsWith('9190000') ||
-    cleaned.startsWith('00000') ||
-    cleaned.startsWith('9198000') ||
-    cleaned.startsWith('9199999') ||
-    cleaned.startsWith('9112345') ||
-    cleaned === '919800000000' ||
     cleaned.length < 10 ||
+    cleaned === '0000000000' ||
+    cleaned === '910000000000' ||
     /^(\d)\1+$/.test(cleaned)
   ) {
     return true
-  }
-
-  // If a specific test phone whitelist is configured in .env, only allow that single number
-  const allowedTestPhone = process.env.WHATSAPP_TEST_PHONE
-  if (allowedTestPhone) {
-    const cleanedAllowed = allowedTestPhone.replace(/\D/g, '')
-    if (cleaned !== cleanedAllowed && !cleaned.endsWith(cleanedAllowed)) {
-      return true
-    }
   }
 
   return false
@@ -97,6 +92,9 @@ export const whatsappService = {
    */
   async getConnectionStatus() {
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+
       const response = await fetch(
         `${EVOLUTION_API_URL}/instance/connectionState/${INSTANCE_NAME}`,
         {
@@ -104,36 +102,43 @@ export const whatsappService = {
           headers: {
             apikey: EVOLUTION_API_KEY,
           },
+          signal: controller.signal,
         }
       )
+      clearTimeout(timeout)
 
-      return await response.json()
+      const json = await response.json()
+      return json
     } catch (err: any) {
       return { status: 'DISCONNECTED', error: err.message }
     }
   },
 
   /**
-   * 4. Send WhatsApp message (with Demo Safe-Mode protection)
+   * 4. Send WhatsApp message directly via Evolution API without artificial lag
    */
   async sendTextMessage(recipientPhone: string, text: string) {
     const formattedNumber = formatPhoneNumber(recipientPhone)
 
-    // Check if number is dummy/demo
     if (isDemoOrDummyNumber(recipientPhone)) {
       console.log(
-        `🛡️ [Demo Safe Mode] Skipped sending real WhatsApp to dummy number: ${recipientPhone} (${formattedNumber}). Logged in CRM records.`
+        `🛡️ [Demo Safe Mode] Skipped dummy placeholder: ${recipientPhone} (${formattedNumber}).`
       )
       return {
         success: true,
         demoMode: true,
-        message: 'Simulated WhatsApp message for demo dummy patient.',
+        message: 'Simulated WhatsApp message for dummy number.',
         recipient: recipientPhone,
         data: { id: `DEMO-MSG-${Date.now()}` },
       }
     }
 
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
+      console.log(`[Evolution API: Dispatching WhatsApp] to ${formattedNumber}...`)
+
       const response = await fetch(`${EVOLUTION_API_URL}/message/sendText/${INSTANCE_NAME}`, {
         method: 'POST',
         headers: {
@@ -142,20 +147,25 @@ export const whatsappService = {
         },
         body: JSON.stringify({
           number: formattedNumber,
-          options: {
-            delay: 1200,
-            presence: 'composing',
-          },
           text,
         }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
 
       const data = await response.json()
-      console.log(`[Evolution API: WhatsApp Sent] to ${formattedNumber}`)
-      return { success: true, data }
+      console.log(
+        `[Evolution API: WhatsApp Response ${response.status}] for ${formattedNumber}:`,
+        JSON.stringify(data).slice(0, 120)
+      )
+
+      return {
+        success: response.ok || response.status === 200 || response.status === 201,
+        data,
+      }
     } catch (err: any) {
       console.warn(
-        `[Evolution API: Fallback/Offline] Could not send to ${formattedNumber}:`,
+        `[Evolution API: Delivery Error] Failed sending to ${formattedNumber}:`,
         err.message
       )
       return { success: false, error: err.message }

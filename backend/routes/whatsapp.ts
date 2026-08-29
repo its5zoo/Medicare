@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { whatsappService } from '../services/whatsappService.js'
+import { whatsappService } from '../services/whatsappService'
 
 const router = Router()
 
@@ -145,6 +145,27 @@ router.post('/send', async (req: Request, res: Response): Promise<any> => {
     }
     const result = await whatsappService.sendTextMessage(phone, message)
     return res.json(result)
+  } catch (error: any) {
+    return res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+// POST /api/whatsapp/test
+router.post('/test', async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { phone } = req.body
+    const targetPhone = phone || '919438479763'
+    const statusData = await whatsappService.getConnectionStatus()
+    const result = await whatsappService.sendTextMessage(
+      targetPhone,
+      `🔔 Medicure CRM WhatsApp Test: Evolution API is active and delivering in real-time. Timestamp: ${new Date().toLocaleTimeString()}`
+    )
+    return res.json({
+      success: result.success,
+      connectionStatus: statusData,
+      sendResult: result,
+      recipient: targetPhone,
+    })
   } catch (error: any) {
     return res.status(500).json({ success: false, error: error.message })
   }
