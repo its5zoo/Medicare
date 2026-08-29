@@ -1,11 +1,10 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Loader2, LogOut, Menu, Moon, Plus, Sun, User } from 'lucide-react'
+import { Loader2, LogOut, Menu } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GlobalPatientSearch } from '@/components/search/GlobalPatientSearch'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogContent,
@@ -14,12 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { useTheme } from '@/contexts/ThemeContext'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useAuth } from '@/auth/useAuth'
 
 export function TopNavbar({ onMenuClick }: { onMenuClick?: () => void }) {
-  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const { data, isLoading } = useDashboard()
   const { logout } = useAuth()
@@ -57,21 +54,6 @@ export function TopNavbar({ onMenuClick }: { onMenuClick?: () => void }) {
         />
 
         <div className="flex items-center gap-2 [[data-sidebar-expanded=true]_&]:ml-auto [[data-sidebar-expanded=true]_&]:gap-4 [[data-sidebar-expanded=false]_&]:ml-auto [[data-sidebar-expanded=false]_&]:gap-6 [[data-sidebar-expanded=false]_&]:pr-4">
-          <Button
-            variant="gradient"
-            size="sm"
-            className="hidden sm:inline-flex"
-            onClick={() => navigate('/registration')}
-          >
-            <Plus className="h-4 w-4" />
-            Quick Action
-          </Button>
-
-          <div className="hidden items-center gap-2 rounded-xl border border-border px-3 py-1.5 sm:flex">
-            {isDark ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
-            <Switch checked={isDark} onCheckedChange={toggleTheme} />
-          </div>
-
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <button className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-muted/60 transition-colors cursor-pointer min-h-[44px] min-w-[44px]">
