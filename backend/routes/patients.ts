@@ -11,7 +11,7 @@ const router = Router()
 // GET /:id or /patient/:id
 router.get(['/:id', '/patient/:id'], async (req: Request, res: Response): Promise<any> => {
   try {
-    const { id } = req.params
+    const id = String(req.params.id || '')
     let patient = await Patient.findOne({ patientId: id })
 
     if (!patient) {

@@ -6,7 +6,7 @@ const router = Router()
 // GET /feedback/:token
 router.get('/feedback/:token', async (req: Request, res: Response): Promise<any> => {
   try {
-    const { token } = req.params
+    const token = String(req.params.token || '')
     let review = await Review.findOne({ token })
 
     if (!review) {

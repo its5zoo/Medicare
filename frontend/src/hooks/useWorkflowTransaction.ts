@@ -71,7 +71,7 @@ export function useWorkflowTransaction() {
       } else {
         setSuccess(options.buildSuccess(result.data))
       }
-    } else if (!uiTimedOutRef.current) {
+    } else if ('error' in result && !uiTimedOutRef.current) {
       const presentation = getErrorPresentation(result.error)
       setError({
         title: presentation.title,
