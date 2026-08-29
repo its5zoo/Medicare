@@ -1,7 +1,7 @@
-import app from "./app.js"
-import { connectDB } from "./config/db.js"
-import { seedDatabase } from "./seed.js"
-import { initCronScheduler } from "./jobs/cronScheduler.js"
+import app from "./app"
+import { connectDB } from "./config/db"
+import { seedDatabase } from "./seed"
+import { initCronScheduler } from "./jobs/cronScheduler"
 
 const PORT = process.env.PORT || 5000
 

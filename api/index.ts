@@ -1,4 +1,4 @@
-import app from '../backend/app.js'
+import app from '../backend/app'
 
 export default app
 

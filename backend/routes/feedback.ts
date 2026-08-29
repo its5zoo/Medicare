@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { Review } from '../models/Review.js'
+import { Review } from '../models/Review'
 
 const router = Router()
 
