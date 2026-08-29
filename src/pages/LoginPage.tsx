@@ -41,6 +41,23 @@ export function LoginPage() {
     }
   }
 
+  const handleDemoLogin = async () => {
+    setUsername('admin')
+    setPassword('password123')
+    setError(null)
+    setIsSubmitting(true)
+
+    const response = await login({ username: 'admin', password: 'password123' })
+
+    if (response.success) {
+      retryInitialization()
+    } else {
+      setIsSubmitting(false)
+      setError(response.error?.message || 'Something went wrong. Please try again.')
+    }
+  }
+
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       {/* LEFT COLUMN: Premium Branding (Hidden on Mobile) */}
@@ -163,12 +180,8 @@ export function LoginPage() {
                     <button
                       type="button"
                       disabled={isSubmitting}
-                      onClick={() => {
-                        setUsername('admin')
-                        setPassword('password123')
-                        setError(null)
-                      }}
-                      className="w-full inline-flex items-center justify-center rounded-lg border border-border bg-muted/40 px-4 py-2.5 text-xs font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                      onClick={handleDemoLogin}
+                      className="w-full inline-flex items-center justify-center rounded-lg border border-border bg-muted/40 px-4 py-2.5 text-xs font-medium text-foreground hover:bg-muted transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       Login as Demo Admin
                     </button>

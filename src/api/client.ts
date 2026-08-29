@@ -27,12 +27,22 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   })
 
   if (!response.ok) {
-    throw new ApiError(`Request failed: ${response.statusText}`, response.status)
+    let msg = `Request failed (${response.status})`
+    if (response.status === 502 || response.status === 503 || response.status === 504) {
+      msg = 'Clinic service is warming up. Please try again shortly.'
+    } else if (response.status === 404 || response.status === 405) {
+      msg = 'The requested clinic service is temporarily unavailable.'
+    } else if (response.status === 401 || response.status === 403) {
+      msg = 'Session expired or unauthorized. Please log in again.'
+    } else if (response.status >= 500) {
+      msg = 'A temporary server issue occurred. Please retry.'
+    }
+    throw new ApiError(msg, response.status)
   }
 
   const contentType = response.headers.get('content-type')
   if (!contentType || !contentType.includes('application/json')) {
-    throw new ApiError('Server returned invalid non-JSON response. Check backend connection.', response.status)
+    throw new ApiError('Clinic server is reconnecting. Please wait a moment.', response.status)
   }
 
   let json: any
