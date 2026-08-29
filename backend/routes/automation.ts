@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
-import { AutomationLog } from '../models/AutomationLog'
-import { automationService } from '../services/automationService'
+import { AutomationLog } from '../models/AutomationLog.js'
+import { automationService } from '../services/automationService.js'
 
 const router = Router()
 

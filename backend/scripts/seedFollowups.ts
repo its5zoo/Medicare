@@ -1,10 +1,10 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import mongoose from 'mongoose'
-import { connectDB } from '../config/db'
-import { Patient } from '../models/Patient'
-import { FollowUp } from '../models/FollowUp'
-import { Activity } from '../models/Activity'
+import { connectDB } from '../config/db.js'
+import { Patient } from '../models/Patient.js'
+import { FollowUp } from '../models/FollowUp.js'
+import { Activity } from '../models/Activity.js'
 
 function daysAgo(days: number): string {
   const d = new Date()

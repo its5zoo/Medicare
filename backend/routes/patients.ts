@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express'
-import { Patient } from '../models/Patient'
-import { Consultation } from '../models/Consultation'
-import { Prescription } from '../models/Prescription'
-import { FollowUp } from '../models/FollowUp'
-import { Activity } from '../models/Activity'
-import { automationService } from '../services/automationService'
+import { Patient } from '../models/Patient.js'
+import { Consultation } from '../models/Consultation.js'
+import { Prescription } from '../models/Prescription.js'
+import { FollowUp } from '../models/FollowUp.js'
+import { Activity } from '../models/Activity.js'
+import { automationService } from '../services/automationService.js'
 
 const router = Router()
 

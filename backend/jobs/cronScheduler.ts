@@ -1,5 +1,5 @@
-﻿import cron from "node-cron"
-import { automationService } from "../services/automationService"
+import cron from "node-cron"
+import { automationService } from "../services/automationService.js"
 
 export function initCronScheduler() {
   // 8am - morning meds + followup reminders

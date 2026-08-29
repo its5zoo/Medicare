@@ -1,10 +1,10 @@
-﻿import { Patient } from "../models/Patient"
-import { Prescription } from "../models/Prescription"
-import { FollowUp } from "../models/FollowUp"
-import { Review } from "../models/Review"
-import { Activity } from "../models/Activity"
-import { AutomationLog } from "../models/AutomationLog"
-import { whatsappService } from "./whatsappService"
+import { Patient } from "../models/Patient.js"
+import { Prescription } from "../models/Prescription.js"
+import { FollowUp } from "../models/FollowUp.js"
+import { Review } from "../models/Review.js"
+import { Activity } from "../models/Activity.js"
+import { AutomationLog } from "../models/AutomationLog.js"
+import { whatsappService } from "./whatsappService.js"
 
 export const automationService = {
   async sendWelcomeRegistration(patient: { patientId: string; name: string; phone: string; doctor: string }) {

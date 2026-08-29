@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
-import { Prescription } from '../models/Prescription'
-import { Patient } from '../models/Patient'
-import { Activity } from '../models/Activity'
+import { Prescription } from '../models/Prescription.js'
+import { Patient } from '../models/Patient.js'
+import { Activity } from '../models/Activity.js'
 
 const router = Router()
 
